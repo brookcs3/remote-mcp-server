@@ -72,6 +72,22 @@ When you open Claude a browser window should open and allow you to login. You sh
 
 ## Deploy to Cloudflare
 
+### Trello credentials
+
+This worker expects Trello credentials at runtime. Configure them as secrets:
+
+```bash
+wrangler secret put TRELLO_API_KEY
+wrangler secret put TRELLO_TOKEN
+```
+
+For local dev, you can export them in your shell before running `wrangler dev`:
+
+```bash
+export TRELLO_API_KEY=your_key
+export TRELLO_TOKEN=your_token
+```
+
 1. `npx wrangler kv namespace create OAUTH_KV`
 2. Follow the guidance to add the kv namespace ID to `wrangler.jsonc`
 3. `npm run deploy`

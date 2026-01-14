@@ -1,19 +1,24 @@
 import OAuthProvider from "@cloudflare/workers-oauth-provider";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { McpAgent } from "agents/mcp";
-import { z } from "zod";
 import app from "./app";
+import { TrelloClient } from "./trello-client";
+import { registerTrelloTools } from "./trello-tools";
 
-export class MyMCP extends McpAgent {
+export class MyMCP extends McpAgent<Env> {
 	server = new McpServer({
-		name: "Demo",
+		name: "Trello MCP",
 		version: "1.0.0",
 	});
 
 	async init() {
-		this.server.tool("add", { a: z.number(), b: z.number() }, async ({ a, b }) => ({
-			content: [{ type: "text", text: String(a + b) }],
-		}));
+		const env = this.env as Env;
+		if (!env?.TRELLO_API_KEY || !env?.TRELLO_TOKEN) {
+			throw new Error("Missing TRELLO_API_KEY or TRELLO_TOKEN in environment.");
+		}
+
+		const trelloClient = new TrelloClient(env.TRELLO_API_KEY, env.TRELLO_TOKEN);
+		registerTrelloTools(this.server, trelloClient);
 	}
 }
 
